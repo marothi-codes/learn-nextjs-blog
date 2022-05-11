@@ -4,37 +4,34 @@ import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory: string = path.join(process.cwd(), 'posts');
 
 export function getSortedPostsData() {
-  // Get filenames under the posts directory.
+  // Get file names under /posts
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
-    // Remove the extensions from the markdown files.
+    // Remove ".md" from file name to get id
     const id = fileName.replace(/\.md$/, '');
 
-    // Read the contents of the markdown file and save them as a string.
+    // Read markdown file as string
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
 
-    // Call grey-matter to parse the posts metadata section.
+    // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
 
-    // Combine the result with the id.
+    // Combine the data with the id
     return {
       id,
-      ...matterResult.data,
+      ...(matterResult.data as { date: string; title: string }),
     };
   });
-
-  // Sort the posts by date.
-  return allPostsData.sort(({ date: a }, { date: b }) => {
-    if (a < b) {
+  // Sort posts by date
+  return allPostsData.sort((a, b) => {
+    if (a.date < b.date) {
       return 1;
-    } else if (a > b) {
-      return -1;
     } else {
-      return 0;
+      return -1;
     }
   });
 }
@@ -51,21 +48,21 @@ export function getAllPostIds() {
   });
 }
 
-export async function getPostData(id) {
-  const fullPath = path.join(postsDirectory, `${id}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+export async function getPostData(id: string) {
+  const fullPath: string = path.join(postsDirectory, `${id}.md`);
+  const fileContents: string = fs.readFileSync(fullPath, 'utf8');
 
   // Parse the meta-data section using gray-matter.
-  const matterResult = matter(fileContents);
+  const matterResult: matter.GrayMatterFile<string> = matter(fileContents);
 
   // Convert the markdown content into a string using remark.
   const processedResult = await remark().use(html).process(matterResult.content);
-  const contentHtml = processedResult.toString();
+  const contentHtml: string = processedResult.toString();
 
   // Combine the data with the id.
   return {
     id,
     contentHtml,
-    ...matterResult.data,
+    ...(matterResult.data as {date: string; title: string}),
   };
 }

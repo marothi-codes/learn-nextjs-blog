@@ -1,7 +1,6 @@
 import React from 'react';
-import Layout from './layout';
 
-export default function Footer() {
+export default function Footer(): JSX.Element {
   return (
     <footer>
       <a

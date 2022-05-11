@@ -7,10 +7,16 @@ import Footer from './footer';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 
-const name = 'Marothi Codes';
-export const siteTitle = 'Next.js Sample Website';
+const name: string = 'Marothi Codes';
+export const siteTitle: string = 'Next.js Sample Website';
 
-export default function Layout({ children, home }) {
+export default function Layout({
+  children,
+  home,
+}: {
+  children: React.ReactNode;
+  home?: boolean;
+}): JSX.Element {
   return (
     <>
       <div className={styles.container}>
